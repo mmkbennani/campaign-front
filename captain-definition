@@ -6,7 +6,6 @@
                           "WORKDIR /usr/src/app",
                           "ADD https://www.google.com /time.now",
                           "COPY ./package.json /usr/src/app/",
-                          "COPY ./pnpm-lock.yaml /usr/src/app/",
                           "COPY ./next.config.mjs /usr/src/app/",
                           "RUN npm install -g pnpm",
                           "RUN pnpm install",
