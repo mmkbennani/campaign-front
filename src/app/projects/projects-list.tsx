@@ -80,7 +80,7 @@ export function ProjectsList() {
                           <AspectRatioPrimitive.Root ratio={16 / 9} className="rounded-md overflow-hidden mt-6">
                             <div className="animate-pulse dark:bg-gray-600 bg-gray-300 h-full w-full absolute -z-10">{card}</div>
                             <img
-                              alt=''
+                              alt=""
                               className="w-full z-10"
                               style={{ transform: 'translate(-50%, -50%)', top: '50%', left: '50%', position: 'absolute' }}
                               src="/images/cards/cards-02.png"
