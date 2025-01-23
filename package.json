@@ -59,6 +59,7 @@
     "jsvectormap": "^1.6.0",
     "lucide-react": "^0.468.0",
     "next": "^14.2.23",
+    "next-themes": "^0.4.4",
     "nouislider": "^15.8.1",
     "pino-pretty": "^13.0.0",
     "pixel-streaming": "^4.3.13",
