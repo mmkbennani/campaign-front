@@ -74,7 +74,7 @@ export function ProjectsList() {
                       <Card className="hover:border-[green] overflow-hidden">
                         <CardHeader className="bg-muted">
                           <CardTitle>{card}</CardTitle>
-                          <CardDescription>"project.description"</CardDescription>
+                          <CardDescription>project.description</CardDescription>
                         </CardHeader>
                         <CardContent>
                           <AspectRatioPrimitive.Root ratio={16 / 9} className="rounded-md overflow-hidden mt-6">
