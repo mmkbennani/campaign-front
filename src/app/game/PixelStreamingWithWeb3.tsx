@@ -32,7 +32,7 @@ const PlayerView = () => {
         console.dir(stream);
         console.dir(actions);
       }}
-      psHost="wss://eventhall.nomadao.net"
+      psHost="wss://67.170.222.187:81"
       psConfig={{
         autoPlay: true,
         autoConnect: false,
