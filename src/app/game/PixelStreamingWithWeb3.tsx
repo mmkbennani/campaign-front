@@ -32,7 +32,7 @@ const PlayerView = () => {
         console.dir(stream);
         console.dir(actions);
       }}
-      psHost="wss://67.170.222.187:81"
+      psHost="wss://67.170.222.187:80"
       psConfig={{
         autoPlay: true,
         autoConnect: false,
