@@ -47,7 +47,7 @@ const PlayerView = () => {
       </Button>
     </MetaEditor>
   );
-};
+}; 
 
 export const PixelStreamingWithWeb3 = () => {
 
