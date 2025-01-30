@@ -32,7 +32,7 @@ const PlayerView = () => {
         console.dir(stream);
         console.dir(actions);
       }}
-      psHost="wss://67.170.222.187:80"
+      psHost="wss://3metad.online"
       psConfig={{
         autoPlay: true,
         autoConnect: false,
