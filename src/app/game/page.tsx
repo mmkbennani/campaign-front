@@ -4,6 +4,7 @@ import { DataContext } from '@/contexts/data-provider';
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import 'dotenv/config';
 import { PixelStreamingWithWeb3 } from "./PixelStreamingWithWeb3";
+import { PixelStreamingWrapper2 } from "./PixelStreamingWrapper2";
 
 const CardsProject: React.FC = () => {
 
@@ -12,10 +13,31 @@ const CardsProject: React.FC = () => {
     data: { eventLogs, getCampaignCount, deployedCampaigns: contextDeployedCampaigns },
   } = useContext(DataContext);
 
+//<PixelStreamingWithWeb3/>
 
+/*
+<PixelStreamingWrapper2
+            initialSettings={{
+                AutoPlayVideo: true,
+                AutoConnect: true,
+                ss: 'wss://3metad.online',
+                StartVideoMuted: true,
+                HoveringMouse: true,
+                WaitForStreamer: true
+            }}
+          />
+
+*/
   return (
     isConnected
-    ? <PixelStreamingWithWeb3/>
+      ? <div
+          style={{
+              height: '100%',
+              width: '100%'
+          }}
+          >
+          <PixelStreamingWithWeb3/>
+        </div>
     : <div className="flex w-full border-l-6 border-warning bg-warning bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-9 pt-2.5 pb-2.5 mt-[62px] mb-[62px]">
         <div className="mr-5 flex h-9 w-9 items-center justify-center rounded-lg bg-warning bg-opacity-30">
           <svg
