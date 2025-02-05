@@ -6,16 +6,18 @@ import { MetaProvider, MetaEditor, Hooks, Context } from "pixel-streaming";
 
 const PlayerView = () => {
 
-
+  const initialCountdown = 10;
   const [psHost, setPsHost] = useState("");
   const refPlayer = React.useRef(null);
-
-
+  const [countdown, setCountdown] = useState<number>(initialCountdown);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+  const matchmakerRef = useRef<WebSocket | null>(null);
+  
   useEffect(() => {
     // Connect to your matchmaker signaling server.
     // This server selects one of your available streaming instances.
     const matchmakerSocket = new WebSocket('wss://3metad.online');
-
+    matchmakerRef.current = matchmakerSocket;
     matchmakerSocket.onopen = () => {
       console.log('Connected to matchmaker signaling server.');
       // Send a client request for a streaming instance.
@@ -33,13 +35,16 @@ const PlayerView = () => {
       if (msg.type === 'matchFound' && msg.streamingUrl) {
         console.log('Received match:', msg);
         setPsHost(msg.streamingUrl);
-      } else if (msg.type === 'noMatchFound') {
-        console.error('No available streaming instance at the moment.');
+        setRefreshKey(prevKey => prevKey + 1);
       }
     };
 
     matchmakerSocket.onerror = (error) => {
       console.error('WebSocket error:', error);
+    };
+    matchmakerSocket.onclose = () => {
+      console.log("Matchmaker connection closed.");
+      matchmakerRef.current = null;
     };
 
     console.log("psHost : "+psHost)
@@ -48,6 +53,33 @@ const PlayerView = () => {
       matchmakerSocket.close();
     };
   }, []);
+
+
+  useEffect(() => {
+    // Create an interval that decrements the countdown every second.
+    if (psHost) return;
+    const interval = setInterval(() => {
+      setCountdown(prevCountdown => {
+        if (!psHost && prevCountdown <= 1) {
+          // When countdown reaches 0, increment refreshKey to refresh MetaEditor.
+          if (matchmakerRef.current && matchmakerRef.current.readyState === WebSocket.OPEN) {
+            matchmakerRef.current.send(JSON.stringify({
+              type: "clientRequest",
+              clientId: generateClientId(10)
+            }));
+          }
+
+          setRefreshKey(prevKey => prevKey + 1);
+          // Reset countdown timer
+          return initialCountdown;
+        }
+        return prevCountdown - 1;
+      });
+    }, 1000);
+
+    // Clean up the interval on component unmount.
+    return () => clearInterval(interval);
+  }, [initialCountdown, psHost]);
 
   function generateClientId(length: number) {
       let result = '';
@@ -62,22 +94,58 @@ const PlayerView = () => {
   }
 
   return (
-    !!psHost && <MetaEditor
-        ref={refPlayer}
-        debugMode="on"
-        showToolbar={false}
-        psHost={psHost}
-        psConfig={{
-          autoPlay: true,
-          autoConnect: true,
-          startMuted: true,
-          hoveringMouse: true,
-          fakeMouseWithTouches: true,
-          matchViewportRes: true
-        }}
-      >
-        
-      </MetaEditor>
+    <div style={{
+          width: '100%',
+          height: '100%',
+          position: 'relative'
+      }}
+    >
+        {!!psHost ?
+          <MetaEditor
+              key={refreshKey}
+              ref={refPlayer}
+              debugMode="on"
+              showToolbar={false}
+              psHost={psHost}
+              psConfig={{
+                autoPlay: true,
+                autoConnect: true,
+                startMuted: true,
+                hoveringMouse: true,
+                fakeMouseWithTouches: true,
+                matchViewportRes: true
+              }}
+            >
+            
+          </MetaEditor>
+          :
+          <div className="flex w-full border-l-6 border-warning bg-warning bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-9 pt-2.5 pb-2.5 mt-[62px] mb-[62px]">
+            <div className="mr-5 flex h-9 w-9 items-center justify-center rounded-lg bg-warning bg-opacity-30">
+              <svg
+                width="19"
+                height="16"
+                viewBox="0 0 19 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.50493 16H17.5023C18.6204 16 19.3413 14.9018 18.8354 13.9735L10.8367 0.770573C10.2852 -0.256858 8.70677 -0.256858 8.15528 0.770573L0.156617 13.9735C-0.334072 14.8998 0.386764 16 1.50493 16ZM10.7585 12.9298C10.7585 13.6155 10.2223 14.1433 9.45583 14.1433C8.6894 14.1433 8.15311 13.6155 8.15311 12.9298V12.9015C8.15311 12.2159 8.6894 11.688 9.45583 11.688C10.2223 11.688 10.7585 12.2159 10.7585 12.9015V12.9298ZM8.75236 4.01062H10.2548C10.6674 4.01062 10.9127 4.33826 10.8671 4.75288L10.2071 10.1186C10.1615 10.5049 9.88572 10.7455 9.50142 10.7455C9.11929 10.7455 8.84138 10.5028 8.79579 10.1186L8.13574 4.75288C8.09449 4.33826 8.33984 4.01062 8.75236 4.01062Z"
+                  fill="#FBBF24"
+                ></path>
+              </svg>
+            </div>
+            <div className="w-full">
+              <h5 className="mb-3 text-lg font-semibold text-[#9D5425]">
+                No session is available
+              </h5>
+              <div id="countdown" style={{ marginTop: '10px', fontWeight: 'bold' }}>
+                Refreshing in: {countdown} seconds...
+              </div>
+            </div>
+          </div>
+        } 
+    </div>
+    
   );
 }; 
 
